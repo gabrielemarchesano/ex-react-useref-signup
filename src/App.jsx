@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 
 const letters = "abcdefghijklmnopqrstuvwxyz";
 const numbers = "0123456789";
@@ -6,17 +6,17 @@ const symbols = "!@#$%^&*()-_=+[]{}|;:'\\\",.<>?/`~";
 
 function App() {
 
-  const [ fullname, setFullname ] = useState("Acqua");
-  const [ username, setUsername ] = useState("Acqua");
-  const [ password, setPassword ] = useState("passwrod");
-  const [ specialization, setSpecialization ] = useState("Frontend");
-  const [ experience, setExperience ] = useState("2");
+  const [ username, setUsername ] = useState("JhonDoe2");
+  const [ password, setPassword ] = useState("password!2");
   const [ description, setDescription ] = useState("Ciao");
+  const fullnameRef = useRef();
+  const specializationRef = useRef();
+  const experienceRef = useRef();
 
   const isUsernameValid = useMemo(() => {
     return [...username].every(char => letters.includes(char.toLowerCase()) ||  numbers.includes(char)) && username.length >= 6
   }, [username])
-  console.log(isUsernameValid)
+  //console.log(isUsernameValid)
 
   const isPassWordValid = useMemo(() => {
     return (
@@ -26,28 +26,35 @@ function App() {
       password.length >= 8
     )
   }, [password])
-  console.log("Password valida: ", isPassWordValid)
+  //console.log("Password valida: ", isPassWordValid)
 
   const isDescriptionValid = useMemo(() => {
     return (
-      description.trim().length > 100 && 
+      description.trim().length >= 100 && 
       description
-      .trim().length < 1000
+      .trim().length <= 1000
     )
   }, [description])
-  console.log("Descrizione valida: ", isDescriptionValid, description.length)
+  //console.log("Descrizione valida: ", isDescriptionValid, description.length)
 
   const handleSubmit = event => {
     event.preventDefault();
 
+    const fullname = fullnameRef.current.value;
+    const specialization = specializationRef.current.value;
+    const experience = experienceRef.current.value;
+
     if(
-      fullname.length === 0 ||
+      fullname.trim().length === 0 ||
       username.length === 0 ||
       password.length === 0 ||
       specialization.length === 0 ||
       experience.length === 0 ||
       experience <= 0 ||
-      description.length === 0
+      description.length === 0 ||
+      !isUsernameValid ||
+      !isPassWordValid ||
+      !isDescriptionValid
     ){
       alert("Tutti i campi devono essere compilati");
       return;
@@ -67,7 +74,7 @@ function App() {
       <form onSubmit={handleSubmit}>
         <label>
           <p>Nome completo</p>
-          <input type="text" onChange={event => setFullname(event.target.value)} value={fullname} placeholder="Nome completo"/>
+          <input type="text" ref={fullnameRef} placeholder="Nome completo"/>
         </label>
         
         <label>
@@ -88,7 +95,7 @@ function App() {
         
         <label>
           <p>Specializzazione</p>
-          <select onChange={event => setSpecialization(event.target.value)} value={specialization}>
+          <select ref={specializationRef}>
             <option value="">-</option>
             <option value="Full stack">Fullstack</option>
             <option value="Frontend">Frontend</option>
@@ -98,7 +105,7 @@ function App() {
         
         <label>
           <p>Anni di esperienza</p>
-          <input type="number" onChange={event => setExperience(event.target.value)} value={experience} placeholder="Anni di esperienza"/>
+          <input type="number" ref={experienceRef} placeholder="Anni di esperienza"/>
         </label>
         
         <label>
